@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 )
 
 // ipify returns external IP as json
@@ -18,12 +19,11 @@ func main() {
 	flag.Parse()
 
 	config := readConfig()
-	fmt.Println(config)
 
 	ip, err := get_ext_ip(url)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 	fmt.Println(ip)
-	getZoneID()
+	getZoneID(config)
 }

@@ -8,13 +8,13 @@ import (
 	"github.com/cloudflare/cloudflare-go"
 )
 
-func getZoneID() {
-	api, err := cloudflare.New(os.Getenv("CF_API_KEY"), os.Getenv("CF_API_EMAIL"))
+func getZoneID(cfg Config) {
+	api, err := cloudflare.New(os.Getenv("CF_API_KEY"), cfg.Cloudflare_email)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	id, err := api.ZoneIDByName("domain")
+	id, err := api.ZoneIDByName(cfg.Domain)
 	if err != nil {
 		log.Fatal(err)
 	}
