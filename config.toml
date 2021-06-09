@@ -1,0 +1,3 @@
+domain = "somedomain.org"
+subdomain = "sub.somedomain.org"
+cloudflare_email =  "example@email.org"
