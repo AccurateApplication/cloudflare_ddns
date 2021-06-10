@@ -25,5 +25,9 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println(ip)
-	getZoneID(config)
+	zoneID, err := getZoneID(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(zoneID)
 }
