@@ -22,12 +22,14 @@ func main() {
 	flag.Parse()
 
 	config := readConfig()
+	CfVars := getCloudflareObjects(config)
 
 	// Create API client which we will used in cloudflare functions
 	api, err := cloudflare.New(os.Getenv("CF_API_KEY"), config.Cloudflare_email)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(zoneID)
 
 	ip, err := get_ext_ip(url)
 	if err != nil {
