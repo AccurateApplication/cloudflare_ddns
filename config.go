@@ -12,8 +12,9 @@ type Config struct {
 	Cloudflare_email string `toml:"cloudflare_email"`
 }
 
-func readConfig() Config {
-	var c Config
+func readConfig() *Config {
+	// var c Config
+	c := new(Config)
 	_, err := toml.DecodeFile(configFile, &c)
 	if err != nil {
 		log.Fatal(err)
