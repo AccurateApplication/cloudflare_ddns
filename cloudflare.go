@@ -37,11 +37,11 @@ func getZoneID(cfg *Config, c *CfVars) (ZoneID string, err error) {
 
 }
 
-// Pupulates dnsrecord struct and returns it.
-func createRecord(Cfg *Config, ip string, name string) cloudflare.DNSRecord {
+// Populates cf.dnsrecord struct and returns it.
+func createRecord(Cfg *Config, ip string, recordName string) cloudflare.DNSRecord {
 	dnsrecord := cloudflare.DNSRecord{}
 	dnsrecord.Type = "A"
-	dnsrecord.Name = name
+	dnsrecord.Name = recordName
 	dnsrecord.Content = ip
 	dnsrecord.TTL = 1 // 1 = Automatic
 	return dnsrecord
