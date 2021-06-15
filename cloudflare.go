@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -20,8 +21,8 @@ func getCloudflareObjects(cfg *Config) *CfVars {
 		log.Fatal(err)
 	}
 	c.API = api
-
 	c.context = context.Background()
+
 	return c
 }
 
@@ -34,4 +35,24 @@ func getZoneID(cfg *Config, c *CfVars) (ZoneID string, err error) {
 	}
 	return id, nil
 
+}
+
+// Pupulates dnsrecord struct and returns it.
+func createRecord(Cfg *Config, ip string, name string) cloudflare.DNSRecord {
+	dnsrecord := cloudflare.DNSRecord{}
+	dnsrecord.Type = "A"
+	dnsrecord.Name = name
+	dnsrecord.Content = ip
+	dnsrecord.TTL = 1 // 1 = Automatic
+	return dnsrecord
+}
+
+func postDNSRecord(cfg *Config, c *CfVars, zoneID string, record cloudflare.DNSRecord) error {
+	_, err := c.API.CreateDNSRecord(c.context, zoneID, record)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Successfully added record: %v to zoneID: %s (domain: %s)\n", record, zoneID, cfg.Domain)
+
+	return nil
 }

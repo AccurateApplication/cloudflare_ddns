@@ -21,16 +21,22 @@ func main() {
 	config := readConfig()
 	CfVars := getCloudflareObjects(config)
 
-	ip, err := get_ext_ip(url)
+	externalIp, err := get_ext_ip(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(ip)
+	fmt.Println(externalIp)
 
 	zoneID, err := getZoneID(config, CfVars)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(zoneID)
+
+	subDomainRecord := createRecord(config, externalIp, config.Subdomain)
+	err = postDNSRecord(config, CfVars, zoneID, subDomainRecord)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 }
