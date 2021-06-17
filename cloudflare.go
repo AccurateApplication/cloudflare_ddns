@@ -68,3 +68,41 @@ func listDNSRecords(cfg *Config, c *CfVars, zoneID string, recordName string) ([
 
 	return rec, nil
 }
+
+func checkRecords(cfg *Config, c *CfVars, zoneID string, cfRecords []cloudflare.DNSRecord, subDomainRecord cloudflare.DNSRecord, externalIp string) error {
+	lenRecords := len(cfRecords)
+	switch {
+	case lenRecords == 0:
+		fmt.Println("No records added for domain, will add")
+		err := postDNSRecord(cfg, c, zoneID, subDomainRecord)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	case lenRecords >= 1:
+		log.Printf("Found %d records matching domain. Will check", lenRecords)
+		for i, r := range cfRecords {
+			fmt.Printf("Checking record: %d\tcontent: %s name: %s, ID: %s\n", i, r.Content, r.Name, r.ID)
+			if r.Content == externalIp {
+				fmt.Printf("Keeping %s, %s\n", r.Name, r.Content)
+			} else if r.Content != externalIp {
+
+				fmt.Printf("Will delete %s, %s\n", r.Name, r.Content)
+				// Delete record without matching ext IP
+				err := c.API.DeleteDNSRecord(c.context, zoneID, r.ID)
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+
+				// Post DNS record with correct ext IP
+				err = postDNSRecord(cfg, c, zoneID, subDomainRecord)
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
