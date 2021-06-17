@@ -52,7 +52,7 @@ func postDNSRecord(cfg *Config, c *CfVars, zoneID string, record cloudflare.DNSR
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Successfully added record: %v to zoneID: %s (domain: %s)\n", record, zoneID, cfg.Domain)
+	fmt.Printf("Successfully added record. content: %s, type: %s, name: %s to zoneID: %s (domain: %s)\n", record.Content, record.Type, record.Name, zoneID, cfg.Domain)
 
 	return nil
 }
