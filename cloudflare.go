@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/cloudflare/cloudflare-go"
+	cloudflare "github.com/cloudflare/cloudflare-go"
 )
 
 type CfVars struct {
@@ -55,4 +55,16 @@ func postDNSRecord(cfg *Config, c *CfVars, zoneID string, record cloudflare.DNSR
 	fmt.Printf("Successfully added record: %v to zoneID: %s (domain: %s)\n", record, zoneID, cfg.Domain)
 
 	return nil
+}
+
+// Returns DNS records that matches recordName (example www.subdomain.domain.org)
+func listDNSRecords(cfg *Config, c *CfVars, zoneID string, recordName string) ([]cloudflare.DNSRecord, error) {
+	subDomainRecord := cloudflare.DNSRecord{Name: recordName}
+	rec, err := c.API.DNSRecords(c.context, zoneID, subDomainRecord)
+	if err != nil {
+		return nil, err
+
+	}
+
+	return rec, nil
 }
