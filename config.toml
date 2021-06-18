@@ -2,3 +2,4 @@ domain = "somedomain.org"
 subdomain = "sub.somedomain.org"
 cloudflare_email =  "example@email.org"
 refresh_rate = 60 # in minutes
+ext_ip_api_url = "https://api.ipify.org?format=json"

@@ -6,9 +6,6 @@ import (
 	"time"
 )
 
-// ipify returns external IP as json
-const url = "https://api.ipify.org?format=json"
-
 var configFile string
 
 func init() {
@@ -34,7 +31,7 @@ func main() {
 		curIp := "1.1.1.1"
 
 		// Get ext IP
-		tmpIp, err := get_ext_ip(url)
+		tmpIp, err := get_ext_ip(config.ExtIpUrl)
 		if err != nil {
 			log.Panic(err)
 		}
