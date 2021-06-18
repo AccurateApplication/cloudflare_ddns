@@ -1,4 +1,4 @@
-module cloudflare
+module github.com/AccurateApplication/cloudflare_ddns
 
 go 1.16
 
