@@ -10,6 +10,7 @@ type Config struct {
 	Domain           string `toml:"domain"`
 	Subdomain        string `toml:"subdomain"`
 	Cloudflare_email string `toml:"cloudflare_email"`
+	RefreshRate      int    `toml:"refresh_rate"`
 }
 
 func readConfig() *Config {
