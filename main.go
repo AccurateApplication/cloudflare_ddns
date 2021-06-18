@@ -30,24 +30,32 @@ func main() {
 	}
 
 	for {
+		// Will change first time run
+		curIp := "1.1.1.1"
+
 		// Get ext IP
-		externalIp, err := get_ext_ip(url)
+		tmpIp, err := get_ext_ip(url)
 		if err != nil {
 			log.Panic(err)
 		}
-		// Populate struct that will be added as record to CF
-		subDomainRecord := createRecord(config, externalIp, config.Subdomain)
 
-		// List DNS records that matches subdomain in config file.
-		dnsRecords, err := listDNSRecords(config, CfVars, zoneID, config.Subdomain)
-		if err != nil {
-			log.Println(err)
+		if tmpIp != curIp {
+			curIp = tmpIp
+			// Populate struct that will be added as record to CF
+			subDomainRecord := createRecord(config, curIp, config.Subdomain)
+
+			// List DNS records that matches subdomain in config file.
+			dnsRecords, err := listDNSRecords(config, CfVars, zoneID, config.Subdomain)
+			if err != nil {
+				log.Println(err)
+			}
+
+			err = checkRecords(config, CfVars, zoneID, dnsRecords, subDomainRecord, curIp)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
-		err = checkRecords(config, CfVars, zoneID, dnsRecords, subDomainRecord, externalIp)
-		if err != nil {
-			log.Fatal(err)
-		}
 		time.Sleep(time.Duration(config.RefreshRate) * time.Minute)
 
 	}
