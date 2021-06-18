@@ -48,11 +48,12 @@ func createRecord(Cfg *Config, ip string, recordName string) cloudflare.DNSRecor
 }
 
 func postDNSRecord(cfg *Config, c *CfVars, zoneID string, record cloudflare.DNSRecord) error {
-	_, err := c.API.CreateDNSRecord(c.context, zoneID, record)
+	fmt.Printf("Will add record. Content: %s, type: %s, name: %s to zoneID: %s (domain: %s)\n", record.Content, record.Type, record.Name, zoneID, cfg.Domain)
+	resp, err := c.API.CreateDNSRecord(c.context, zoneID, record)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Successfully added record. content: %s, type: %s, name: %s to zoneID: %s (domain: %s)\n", record.Content, record.Type, record.Name, zoneID, cfg.Domain)
+	fmt.Printf("Success posting DNS record true/false: %t\n", resp.Success)
 
 	return nil
 }
@@ -95,6 +96,7 @@ func checkRecords(cfg *Config, c *CfVars, zoneID string, cfRecords []cloudflare.
 					return err
 				}
 
+				fmt.Printf("..and instead add correct one: %s, %s\n", r.Name, r.Content)
 				// Post DNS record with correct ext IP
 				err = postDNSRecord(cfg, c, zoneID, subDomainRecord)
 				if err != nil {
