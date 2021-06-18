@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"time"
 )
 
 // ipify returns external IP as json
@@ -20,29 +21,35 @@ func main() {
 	config := readConfig()
 	CfVars := getCloudflareObjects(config)
 
+	log.Printf("Will check DNS record every %d minutes.\n", config.RefreshRate)
+
 	// Get zoneID
 	zoneID, err := getZoneID(config, CfVars)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// List DNS records that matches subdomain in config file.
-	dnsRecords, err := listDNSRecords(config, CfVars, zoneID, config.Subdomain)
-	if err != nil {
-		log.Println(err)
-	}
+	for {
+		// Get ext IP
+		externalIp, err := get_ext_ip(url)
+		if err != nil {
+			log.Panic(err)
+		}
+		// Populate struct that will be added as record to CF
+		subDomainRecord := createRecord(config, externalIp, config.Subdomain)
 
-	// Get ext IP
-	externalIp, err := get_ext_ip(url)
-	if err != nil {
-		log.Fatal(err)
-	}
+		// List DNS records that matches subdomain in config file.
+		dnsRecords, err := listDNSRecords(config, CfVars, zoneID, config.Subdomain)
+		if err != nil {
+			log.Println(err)
+		}
 
-	// Populate struct that will be added as record to CF
-	subDomainRecord := createRecord(config, externalIp, config.Subdomain)
-	err = checkRecords(config, CfVars, zoneID, dnsRecords, subDomainRecord, externalIp)
-	if err != nil {
-		log.Fatal(err)
+		err = checkRecords(config, CfVars, zoneID, dnsRecords, subDomainRecord, externalIp)
+		if err != nil {
+			log.Fatal(err)
+		}
+		time.Sleep(time.Duration(config.RefreshRate) * time.Minute)
+
 	}
 
 }
